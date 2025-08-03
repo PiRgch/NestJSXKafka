@@ -34,7 +34,7 @@ import { kafkaConfig } from './infrastructure/kafka/kafka.config';
       },
     ]),
   ],
-  controllers: [OrderController, KafkaEventHandler],
+  controllers: [OrderController],
   providers: [
     // Use Cases
     CreateOrderUseCase,

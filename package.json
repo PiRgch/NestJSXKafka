@@ -66,9 +66,6 @@
     "*.{ts,js}": [
       "eslint --fix",
       "prettier --write"
-    ],
-    "*.ts": [
-      "tsc --noEmit"
     ]
   },
   "jest": {

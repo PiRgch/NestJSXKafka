@@ -1,17 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Module } from '@nestjs/common';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { OrderModule } from './order/order.module';
 import { kafkaConfig } from './order/infrastructure/kafka/kafka.config';
 
-async function bootstrap() {
-  // For production with Kafka, use OrderModule instead of OrderDevModule
-  const AppModuleWithKafka = class {
-    static imports = [OrderModule]; // Use full Kafka module
-    static controllers = [];
-    static providers = [];
-  };
+@Module({
+  imports: [OrderModule],
+})
+class AppModuleWithKafka {}
 
+async function bootstrap() {
   // Create HTTP application
   const app = await NestFactory.create(AppModuleWithKafka);
 
