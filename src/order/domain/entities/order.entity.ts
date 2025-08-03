@@ -8,7 +8,7 @@ export enum OrderStatus {
   CONFIRMED = 'CONFIRMED',
   SHIPPED = 'SHIPPED',
   DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 export interface OrderItem {
@@ -23,7 +23,7 @@ export class Order extends AggregateRoot {
     private readonly _customerId: string,
     private readonly _items: OrderItem[],
     private _status: OrderStatus,
-    private readonly _createdAt: Date
+    private readonly _createdAt: Date,
   ) {
     super();
   }
@@ -51,7 +51,7 @@ export class Order extends AggregateRoot {
   get totalAmount(): Money {
     return this._items.reduce(
       (total, item) => total.add(item.price.multiply(item.quantity)),
-      new Money(0)
+      new Money(0),
     );
   }
 
@@ -70,16 +70,11 @@ export class Order extends AggregateRoot {
       customerId,
       items,
       OrderStatus.PENDING,
-      new Date()
+      new Date(),
     );
 
     order.addDomainEvent(
-      new OrderCreatedEvent(
-        orderId,
-        customerId,
-        order.totalAmount,
-        items
-      )
+      new OrderCreatedEvent(orderId, customerId, order.totalAmount, items),
     );
 
     return order;

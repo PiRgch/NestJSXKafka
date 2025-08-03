@@ -7,7 +7,11 @@ export class OrderCreatedEvent extends DomainEvent {
     public readonly orderId: OrderId,
     public readonly customerId: string,
     public readonly totalAmount: Money,
-    public readonly items: Array<{ productId: string; quantity: number; price: Money }>
+    public readonly items: Array<{
+      productId: string;
+      quantity: number;
+      price: Money;
+    }>,
   ) {
     super();
   }

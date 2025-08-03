@@ -1,4 +1,4 @@
-import { Module, Inject } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, ClientKafka } from '@nestjs/microservices';
 
 // Controllers
@@ -9,10 +9,12 @@ import { CreateOrderUseCase } from './application/use-cases/create-order.use-cas
 import { GetOrderUseCase } from './application/use-cases/get-order.use-case';
 
 // Ports
-import type { OrderRepository } from './domain/repositories/order.repository';
-import type { EventPublisher } from './application/ports/event-publisher.port';
 import type { Logger } from './application/ports/logger.port';
-import { ORDER_REPOSITORY_TOKEN, EVENT_PUBLISHER_TOKEN, LOGGER_TOKEN } from './application/ports/tokens';
+import {
+  ORDER_REPOSITORY_TOKEN,
+  EVENT_PUBLISHER_TOKEN,
+  LOGGER_TOKEN,
+} from './application/ports/tokens';
 
 // Adapters
 import { InMemoryOrderRepositoryAdapter } from './infrastructure/adapters/in-memory-order-repository.adapter';
@@ -37,7 +39,7 @@ import { kafkaConfig } from './infrastructure/kafka/kafka.config';
     // Use Cases
     CreateOrderUseCase,
     GetOrderUseCase,
-    
+
     // Adapters (Infrastructure)
     {
       provide: ORDER_REPOSITORY_TOKEN,
@@ -54,7 +56,7 @@ import { kafkaConfig } from './infrastructure/kafka/kafka.config';
       provide: LOGGER_TOKEN,
       useClass: NestJSLoggerAdapter,
     },
-    
+
     // Kafka Event Handler
     KafkaEventHandler,
   ],

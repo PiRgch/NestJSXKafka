@@ -8,10 +8,11 @@ import { CreateOrderUseCase } from './application/use-cases/create-order.use-cas
 import { GetOrderUseCase } from './application/use-cases/get-order.use-case';
 
 // Ports
-import type { OrderRepository } from './domain/repositories/order.repository';
-import type { EventPublisher } from './application/ports/event-publisher.port';
-import type { Logger } from './application/ports/logger.port';
-import { ORDER_REPOSITORY_TOKEN, EVENT_PUBLISHER_TOKEN, LOGGER_TOKEN } from './application/ports/tokens';
+import {
+  ORDER_REPOSITORY_TOKEN,
+  EVENT_PUBLISHER_TOKEN,
+  LOGGER_TOKEN,
+} from './application/ports/tokens';
 
 // Adapters
 import { InMemoryOrderRepositoryAdapter } from './infrastructure/adapters/in-memory-order-repository.adapter';
@@ -24,7 +25,7 @@ import { NestJSLoggerAdapter } from './infrastructure/adapters/nestjs-logger.ada
     // Use Cases
     CreateOrderUseCase,
     GetOrderUseCase,
-    
+
     // Adapters (Infrastructure) - Development mode without Kafka
     {
       provide: ORDER_REPOSITORY_TOKEN,

@@ -11,25 +11,36 @@ import { LOGGER_TOKEN } from '../../application/ports/tokens';
 export class KafkaEventPublisherAdapter implements EventPublisher {
   constructor(
     private readonly kafkaClient: ClientKafka,
-    @Inject(LOGGER_TOKEN) private readonly logger: Logger
+    @Inject(LOGGER_TOKEN) private readonly logger: Logger,
   ) {}
 
   async publish(event: DomainEvent): Promise<void> {
     try {
       const topic = this.getTopicForEvent(event);
-      const message = this.serializeEvent(event);
+      const message: Record<string, unknown> = this.serializeEvent(event);
 
-      this.logger.log(`Publishing event ${event.getEventName()} to topic ${topic}`, 'KafkaEventPublisher');
+      this.logger.log(
+        `Publishing event ${event.getEventName()} to topic ${topic}`,
+        'KafkaEventPublisher',
+      );
 
       await this.kafkaClient.emit(topic, message).toPromise();
-    } catch (error) {
-      this.logger.error(`Failed to publish event: ${error.message}`, error.stack, 'KafkaEventPublisher');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `Failed to publish event: ${errorMessage}`,
+        errorStack,
+        'KafkaEventPublisher',
+      );
       throw error;
     }
   }
 
   async publishAll(events: DomainEvent[]): Promise<void> {
-    await Promise.all(events.map(event => this.publish(event)));
+    await Promise.all(events.map((event) => this.publish(event)));
   }
 
   private getTopicForEvent(event: DomainEvent): string {
@@ -41,7 +52,7 @@ export class KafkaEventPublisherAdapter implements EventPublisher {
     }
   }
 
-  private serializeEvent(event: DomainEvent): any {
+  private serializeEvent(event: DomainEvent): Record<string, unknown> {
     if (event instanceof OrderCreatedEvent) {
       return {
         eventName: event.getEventName(),
@@ -52,17 +63,17 @@ export class KafkaEventPublisherAdapter implements EventPublisher {
           customerId: event.customerId,
           totalAmount: {
             amount: event.totalAmount.amount,
-            currency: event.totalAmount.currency
+            currency: event.totalAmount.currency,
           },
-          items: event.items.map(item => ({
+          items: event.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: {
               amount: item.price.amount,
-              currency: item.price.currency
-            }
-          }))
-        }
+              currency: item.price.currency,
+            },
+          })),
+        },
       };
     }
 
@@ -70,7 +81,7 @@ export class KafkaEventPublisherAdapter implements EventPublisher {
       eventName: event.getEventName(),
       eventVersion: event.eventVersion,
       occurredOn: event.occurredOn.toISOString(),
-      data: event
+      data: event,
     };
   }
 }

@@ -25,8 +25,9 @@ export interface GetOrderResult {
 @Injectable()
 export class GetOrderUseCase {
   constructor(
-    @Inject(ORDER_REPOSITORY_TOKEN) private readonly orderRepository: OrderRepository,
-    @Inject(LOGGER_TOKEN) private readonly logger: Logger
+    @Inject(ORDER_REPOSITORY_TOKEN)
+    private readonly orderRepository: OrderRepository,
+    @Inject(LOGGER_TOKEN) private readonly logger: Logger,
   ) {}
 
   async execute(query: GetOrderQuery): Promise<GetOrderResult | null> {
@@ -37,7 +38,10 @@ export class GetOrderUseCase {
       const order = await this.orderRepository.findById(orderId);
 
       if (!order) {
-        this.logger.warn(`Order not found: ${query.orderId}`, 'GetOrderUseCase');
+        this.logger.warn(
+          `Order not found: ${query.orderId}`,
+          'GetOrderUseCase',
+        );
         return null;
       }
 
@@ -47,15 +51,23 @@ export class GetOrderUseCase {
         status: order.status,
         totalAmount: order.totalAmount.amount,
         currency: order.totalAmount.currency,
-        items: order.items.map(item => ({
+        items: order.items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
-          price: item.price.amount
+          price: item.price.amount,
         })),
-        createdAt: order.createdAt
+        createdAt: order.createdAt,
       };
-    } catch (error) {
-      this.logger.error(`Failed to get order: ${error.message}`, error.stack, 'GetOrderUseCase');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `Failed to get order: ${errorMessage}`,
+        errorStack,
+        'GetOrderUseCase',
+      );
       throw error;
     }
   }
